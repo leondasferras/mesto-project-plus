@@ -1,7 +1,7 @@
 {
   "name": "mest-plus",
   "version": "1.0.0",
-  "description": "Место back-end",
+  "description": "Mesto back-end",
   "main": "dist/app.js",
   "scripts": {
     "lint": "npx eslint src/**/*.ts",

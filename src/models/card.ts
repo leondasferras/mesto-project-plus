@@ -1,10 +1,10 @@
-import  {  model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 interface ICard {
   name: string;
   link: string;
   owner: Schema.Types.ObjectId;
-  likes: Array<Schema.Types.ObjectId>;
+  likes: [Schema.Types.ObjectId];
   createdAt:Date;
 }
 
@@ -13,25 +13,25 @@ const cardSchema = new Schema<ICard>({
     type: String,
     minlength: 2,
     maxlength: 30,
-    required: true
+    required: true,
   },
   link: {
     type: String,
-    required: true
+    required: true,
   },
   owner: {
-    type:Schema.Types.ObjectId,
-    required: true
+    type: Schema.Types.ObjectId,
+    required: true,
   },
-  likes: {
-    default:[],
-    type: [Schema.Types.ObjectId],
-    ref:'User'
-  },
+  likes: [{
+    default: [],
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
   createdAt: {
-    type:Date,
-    default: Date.now()
-  }
-})
+    type: Date,
+    default: Date.now(),
+  },
+});
 
 export default model<ICard>('Card', cardSchema);

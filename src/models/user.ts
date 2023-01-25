@@ -1,4 +1,4 @@
-import  {  model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 interface IUser {
   name: string;
@@ -8,24 +8,21 @@ interface IUser {
 
 const userSchema = new Schema<IUser>({
   name: {
-    type:String,
+    type: String,
     minlength: 2,
     maxlength: 30,
-    required: true
+    required: true,
   },
   about: {
-    type:String,
+    type: String,
     minlength: 2,
     maxlength: 200,
-    required: true
+    required: true,
   },
   avatar: {
-    type:String,
-    required: true
-  }
-})
-
-
-
+    type: String,
+    required: true,
+  },
+});
 
 export default model<IUser>('User', userSchema);

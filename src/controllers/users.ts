@@ -1,7 +1,14 @@
 import { Request, Response } from 'express';
-import { IUserRequest } from '../utils/types';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { IUserRequest, ISessionRequest } from '../utils/types';
 import { SERVER_ERROR, INCORRECT_DATA_ERROR, NOT_FOUND_ERROR } from '../utils/response-codes';
 import User from '../models/user';
+import { jwtKey } from '../utils/constants';
+
+export const getCurrentUser = (req:Request, res:Response) => {
+
+}
 
 export const getUsers = (req:Request, res:Response) => User.find({})
   .then((users) => res.send(users))
@@ -29,8 +36,13 @@ export const getUser = (req:Request, res:Response) => {
 };
 
 export const createUser = (req:Request, res:Response) => {
-  const { name, about, avatar } = req.body;
-  return User.create({ name, about, avatar })
+  const {
+    email, password, name, about, avatar,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      email, password: hash, name, about, avatar,
+    }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -81,4 +93,15 @@ export const updateUserAvatar = (req:IUserRequest, res:Response) => {
           res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
       }
     });
+};
+
+export const login = (req:Request, res:Response) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const { _id } = user;
+      const token = jwt.sign({ _id }, jwtKey, { expiresIn: '7d' });
+      res.cookie('token', token, { httpOnly: true }).send(user);
+    })
+    .catch((err) => res.status(401).send({ message: err.message }));
 };

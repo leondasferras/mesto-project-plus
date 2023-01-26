@@ -4,6 +4,8 @@ import path from 'path';
 import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
 import { IUserRequest } from './utils/types';
+import { login, createUser } from './controllers/users';
+import authMiddleware from './middlewares/auth'
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -20,6 +22,11 @@ app.use((req:IUserRequest, _, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(authMiddleware);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 

@@ -5,7 +5,7 @@ import { SERVER_ERROR, INCORRECT_DATA_ERROR, NOT_FOUND_ERROR } from '../utils/re
 
 export const getCards = (req:Request, res:Response) => Card.find({})
   .then((cards) => res.send(cards))
-  .catch(() => res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' }));
+  .catch(() => res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
 
 export const createCard = (req:IUserRequest, res:Response) => {
   const { name, link } = req.body;
@@ -15,7 +15,7 @@ export const createCard = (req:IUserRequest, res:Response) => {
     .catch((e) => {
       if (e.name === 'ValidationError') {
         res.status(INCORRECT_DATA_ERROR).send({ message: 'Отправлены некорректные данные карточки' });
-      } else res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
+      } else res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
     });
 };
 
@@ -50,7 +50,7 @@ export const likeCard = (req:IUserRequest, res:Response) => {
           res.status(NOT_FOUND_ERROR).send({ message: e.message });
           break;
         default:
-          res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
+          res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
@@ -75,7 +75,7 @@ export const unlikeCard = (req:IUserRequest, res:Response) => {
           res.status(NOT_FOUND_ERROR).send({ message: e.message });
           break;
         default:
-          res.status(SERVER_ERROR).send({ message: 'Ошибка сервера' });
+          res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };

@@ -2,7 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
 import usersRouter from './routes/users';
-import userRouter from './routes/user';
 import cardsRouter from './routes/cards';
 import { IUserRequest } from './utils/types';
 
@@ -21,7 +20,6 @@ app.use((req:IUserRequest, _, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/user', userRouter);
 app.use('/users', usersRouter);
 app.use('/cards', cardsRouter);
 

@@ -64,7 +64,9 @@ userSchema.static(
             if (!matched) {
               const e = new Error('Неправильные почта или пароль'); e.name = 'notFound'; throw e;
             }
-            return user;
+            const noPassUser:any = user.toObject();
+            delete noPassUser.password;
+            return noPassUser;
           });
       });
   },

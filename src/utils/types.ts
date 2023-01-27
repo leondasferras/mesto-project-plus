@@ -9,3 +9,7 @@ export interface IUserRequest extends Request {
 export interface ISessionRequest extends Request {
   user?: string | JwtPayload
 }
+
+export interface IError extends Error {
+  statusCode: number
+}

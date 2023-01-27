@@ -5,6 +5,8 @@ import usersRouter from './routes/users';
 import cardsRouter from './routes/cards';
 import { login, createUser } from './controllers/users';
 import authMiddleware from './middlewares/auth';
+import errorsMiddleware from './middlewares/error';
+
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -24,4 +26,5 @@ app.use('/cards', cardsRouter);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(errorsMiddleware);
 app.listen(PORT);

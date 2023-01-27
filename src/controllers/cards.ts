@@ -19,14 +19,25 @@ export const createCard = (req:IUserRequest, res:Response) => {
     });
 };
 
-export const deleteCard = (req:Request, res:Response) => {
+export const deleteCard = (req:IUserRequest, res:Response) => {
   const { cardId } = req.params;
-  return Card.findByIdAndRemove(cardId)
+  const userId = req.user;
+  return Card.findById(cardId)
     .then((card) => {
-      if (!card) { const e = new Error('Карточка с указанным _id не найдена.'); e.name = 'notFound'; throw e; }
-      res.send(card);
+      if (!card) {
+        const e = new Error('Карточка с указанным _id не найдена.');
+        e.name = 'notFound';
+        throw e;
+      } else if (card.owner.toString() !== userId!.toString()) {
+        const e = new Error('Нельзя удалять чужие карточки');
+        e.name = 'notFound';
+        throw e;
+      } else {
+        card.delete();
+        res.send(card);
+      }
     })
-    .catch(() => res.status(NOT_FOUND_ERROR).send({ message: 'Карточка с указанным _id не найдена' }));
+    .catch((e) => res.status(NOT_FOUND_ERROR).send({ message: e.message }));
 };
 
 export const likeCard = (req:IUserRequest, res:Response) => {

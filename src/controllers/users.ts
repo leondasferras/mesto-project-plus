@@ -6,9 +6,14 @@ import { SERVER_ERROR, INCORRECT_DATA_ERROR, NOT_FOUND_ERROR } from '../utils/re
 import User from '../models/user';
 import { jwtKey } from '../utils/constants';
 
-export const getCurrentUser = (req:Request, res:Response) => {
-
-}
+export const getCurrentUser = (req:ISessionRequest, res:Response) => {
+  const userId = req.user;
+  User.findById(userId)
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((e) => res.status(SERVER_ERROR).send(e.message));
+};
 
 export const getUsers = (req:Request, res:Response) => User.find({})
   .then((users) => res.send(users))

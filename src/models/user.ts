@@ -28,6 +28,7 @@ const userSchema = new Schema<IUser, IUserModel>({
   password: {
     type: String,
     required: true,
+    select: false,
   },
   name: {
     type: String,
@@ -54,7 +55,7 @@ const userSchema = new Schema<IUser, IUserModel>({
 userSchema.static(
   'findUserByCredentials',
   function findUserByCredentials(email: string, password: string) {
-    return this.findOne({ email })
+    return this.findOne({ email }).select('+password')
       .then((user) => {
         if (!user) { const e = new Error('Неправильные почта или пароль'); e.name = 'notFound'; throw e; }
 

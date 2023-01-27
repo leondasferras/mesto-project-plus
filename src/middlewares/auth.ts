@@ -4,6 +4,10 @@ import { AUTH_ERROR } from '../utils/response-codes';
 import { jwtKey } from '../utils/constants';
 import { ISessionRequest } from '../utils/types';
 
+interface JwtPayload {
+  _id:string;
+}
+
 export default (req:ISessionRequest, res:Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
@@ -15,12 +19,11 @@ export default (req:ISessionRequest, res:Response, next: NextFunction) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, jwtKey);
-    console.log(payload);
+    payload = jwt.verify(token, jwtKey) as JwtPayload;
   } catch (error) {
     return res.status(AUTH_ERROR).send({ message: 'Необходима авторизация' });
   }
 
-  req.user = payload;
-  next();
+  req.user = payload._id;
+  return next();
 };

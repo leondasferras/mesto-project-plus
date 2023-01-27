@@ -11,10 +11,10 @@ import {
 const router = Router();
 
 router.get('/', getUsers);
-router.post('/', createUser);
+router.get('/me', getCurrentUser);
 router.get('/:userId', getUser);
 
-router.get('./me', getCurrentUser);
+router.post('/', createUser);
 router.patch('/me', updateUserInfo);
 router.patch('/me/avatar', updateUserAvatar);
 

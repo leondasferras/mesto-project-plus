@@ -1,13 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IError } from '../utils/types';
 
-// const errorsMiddleware = ((err:IError, req:Request, res:Response, next:NextFunction) => {
-//   // const { statusCode = 500, message } = err;
-//   res.send(err);
-
-//   next();
-// });
-
 const errorsMiddleware = ((err:IError, req:Request, res:Response, next:NextFunction) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({

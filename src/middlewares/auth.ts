@@ -24,6 +24,6 @@ export default (req:ISessionRequest, res:Response, next: NextFunction) => {
     throw new AuthError('Необходимо авторизоваться');
   }
 
-  req.user = payload._id;
+  req.user = payload;
   return next();
 };

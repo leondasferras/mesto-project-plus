@@ -1,46 +1,39 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import Card from '../models/card';
 import { IUserRequest } from '../utils/types';
-import { SERVER_ERROR, INCORRECT_DATA_ERROR, NOT_FOUND_ERROR } from '../utils/response-codes';
+import NotFoundError from '../utils/errors/not-found';
+import PermissionError from '../utils/errors/permission';
 
-export const getCards = (req:Request, res:Response) => Card.find({})
+export const getCards = (req:Request, res:Response, next:NextFunction) => Card.find({})
   .then((cards) => res.send(cards))
-  .catch(() => res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
+  .catch(next);
 
-export const createCard = (req:IUserRequest, res:Response) => {
+export const createCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { name, link } = req.body;
   const owner = req.user;
   return Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    .catch((e) => {
-      if (e.name === 'ValidationError') {
-        res.status(INCORRECT_DATA_ERROR).send({ message: 'Отправлены некорректные данные карточки' });
-      } else res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
-    });
+    .catch(next);
 };
 
-export const deleteCard = (req:IUserRequest, res:Response) => {
+export const deleteCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { cardId } = req.params;
   const userId = req.user;
   return Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        const e = new Error('Карточка с указанным _id не найдена.');
-        e.name = 'notFound';
-        throw e;
+        throw new NotFoundError('Карточка с указанным _id не найдена.');
       } else if (card.owner.toString() !== userId!.toString()) {
-        const e = new Error('Нельзя удалять чужие карточки');
-        e.name = 'notFound';
-        throw e;
+        throw new PermissionError('Нельзя удалять чужие карточки');
       } else {
         card.delete();
         res.send(card);
       }
     })
-    .catch((e) => res.status(NOT_FOUND_ERROR).send({ message: e.message }));
+    .catch(next);
 };
 
-export const likeCard = (req:IUserRequest, res:Response) => {
+export const likeCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { cardId } = req.params;
   const { _id } = req.user!;
   return Card.findByIdAndUpdate(
@@ -49,23 +42,12 @@ export const likeCard = (req:IUserRequest, res:Response) => {
     { new: true, runValidators: true },
   )
     .then((card) => {
-      if (!card) { const e = new Error('Карточка с указанным _id не найдена.'); e.name = 'notFound'; throw e; }
+      if (!card) { throw new NotFoundError('Карточка с указанным _id не найдена.'); }
       res.send(card);
     })
-    .catch((e) => {
-      switch (e.name) {
-        case 'CastError':
-          res.status(INCORRECT_DATA_ERROR).send({ message: 'Переданы некорректные данные карточки' });
-          break;
-        case 'notFound':
-          res.status(NOT_FOUND_ERROR).send({ message: e.message });
-          break;
-        default:
-          res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
-      }
-    });
+    .catch(next);
 };
-export const unlikeCard = (req:IUserRequest, res:Response) => {
+export const unlikeCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { cardId } = req.params;
   const { _id } = req.user!;
   return Card.findByIdAndUpdate(
@@ -74,19 +56,8 @@ export const unlikeCard = (req:IUserRequest, res:Response) => {
     { new: true, runValidators: true },
   )
     .then((card) => {
-      if (!card) { const e = new Error('Карточка с указанным _id не найдена.'); e.name = 'notFound'; throw e; }
+      if (!card) { throw new NotFoundError('Карточка с указанным _id не найдена.'); }
       res.send(card);
     })
-    .catch((e) => {
-      switch (e.name) {
-        case 'CastError':
-          res.status(INCORRECT_DATA_ERROR).send({ message: 'Переданы некорректные данные карточки' });
-          break;
-        case 'notFound':
-          res.status(NOT_FOUND_ERROR).send({ message: e.message });
-          break;
-        default:
-          res.status(SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
-      }
-    });
+    .catch(next);
 };

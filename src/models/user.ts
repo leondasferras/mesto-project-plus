@@ -3,6 +3,7 @@ import {
 } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
+import NotFoundError from '../utils/errors/not-found';
 
 interface IUser {
   email: string;
@@ -57,12 +58,12 @@ userSchema.static(
   function findUserByCredentials(email: string, password: string) {
     return this.findOne({ email }).select('+password')
       .then((user) => {
-        if (!user) { const e = new Error('Неправильные почта или пароль'); e.name = 'notFound'; throw e; }
+        if (!user) { throw new NotFoundError('Неправильные почта или пароль'); }
 
         return bcrypt.compare(password, user.password)
           .then((matched) => {
             if (!matched) {
-              const e = new Error('Неправильные почта или пароль'); e.name = 'notFound'; throw e;
+              throw new NotFoundError('Неправильные почта или пароль');
             }
             const noPassUser:any = user.toObject();
             delete noPassUser.password;

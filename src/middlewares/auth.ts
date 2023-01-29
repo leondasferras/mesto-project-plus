@@ -1,6 +1,6 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { AUTH_ERROR } from '../utils/response-codes';
+import AuthError from '../utils/errors/auth';
 import { jwtKey } from '../utils/constants';
 import { ISessionRequest } from '../utils/types';
 
@@ -12,7 +12,7 @@ export default (req:ISessionRequest, res:Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res.status(AUTH_ERROR).send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходимо авторизоваться');
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -21,7 +21,7 @@ export default (req:ISessionRequest, res:Response, next: NextFunction) => {
   try {
     payload = jwt.verify(token, jwtKey) as JwtPayload;
   } catch (error) {
-    return res.status(AUTH_ERROR).send({ message: 'Необходима авторизация' });
+    throw new AuthError('Необходимо авторизоваться');
   }
 
   req.user = payload._id;

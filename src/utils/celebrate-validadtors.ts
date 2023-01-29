@@ -2,6 +2,13 @@ import { celebrate, Joi } from 'celebrate';
 import { linkPattern } from './constants';
 
 // user validators
+
+export const validateGetUser = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().hex().length(24),
+  }),
+});
+
 export const validateCreateUser = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
@@ -37,5 +44,23 @@ export const validateCreateCard = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().pattern(linkPattern),
+  }),
+});
+
+export const validateDeleteCard = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+  }),
+});
+
+export const validateLikeCard = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+  }),
+});
+
+export const validateUnlikeCard = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
   }),
 });

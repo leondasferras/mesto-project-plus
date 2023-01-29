@@ -10,7 +10,7 @@ export const getCards = (req:Request, res:Response, next:NextFunction) => Card.f
 
 export const createCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { name, link } = req.body;
-  const owner = req.user;
+  const owner = req.user!._id;
   return Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
     .catch(next);
@@ -18,7 +18,7 @@ export const createCard = (req:IUserRequest, res:Response, next:NextFunction) =>
 
 export const deleteCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { cardId } = req.params;
-  const userId = req.user;
+  const userId = req.user!._id;
   return Card.findById(cardId)
     .then((card) => {
       if (!card) {
@@ -35,10 +35,10 @@ export const deleteCard = (req:IUserRequest, res:Response, next:NextFunction) =>
 
 export const likeCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { cardId } = req.params;
-  const { _id } = req.user!;
+  const userId = req.user!._id;
   return Card.findByIdAndUpdate(
     cardId,
-    { $addToSet: { likes: _id } },
+    { $addToSet: { likes: userId } },
     { new: true, runValidators: true },
   )
     .then((card) => {
@@ -49,10 +49,10 @@ export const likeCard = (req:IUserRequest, res:Response, next:NextFunction) => {
 };
 export const unlikeCard = (req:IUserRequest, res:Response, next:NextFunction) => {
   const { cardId } = req.params;
-  const { _id } = req.user!;
+  const userId = req.user!._id;
   return Card.findByIdAndUpdate(
     cardId,
-    { $pull: { likes: _id } },
+    { $pull: { likes: userId } },
     { new: true, runValidators: true },
   )
     .then((card) => {

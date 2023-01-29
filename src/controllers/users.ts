@@ -38,7 +38,11 @@ export const createUser = (req:Request, res:Response, next:NextFunction) => {
     .then((hash) => User.create({
       email, password: hash, name, about, avatar,
     }))
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      const noPassUser:any = user.toObject();
+      delete noPassUser.password;
+      res.send({ data: noPassUser });
+    })
     .catch(((e) => {
       if (e.code === 11000) {
         next(new ConflictingRequestError('Пользователь с таким e-mail уже существует'));
@@ -47,7 +51,7 @@ export const createUser = (req:Request, res:Response, next:NextFunction) => {
 };
 
 export const updateUserInfo = (req:IUserRequest, res:Response, next:NextFunction) => {
-  const _id = req.user;
+  const { _id } = req.user!;
   const { name, about } = req.body;
   return User.findByIdAndUpdate(_id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
@@ -58,7 +62,7 @@ export const updateUserInfo = (req:IUserRequest, res:Response, next:NextFunction
 };
 
 export const updateUserAvatar = (req:IUserRequest, res:Response, next:NextFunction) => {
-  const _id = req.user;
+  const { _id } = req.user!;
   const { avatar } = req.body;
   return User.findByIdAndUpdate(_id, { avatar }, { new: true, runValidators: true })
     .then((user) => {

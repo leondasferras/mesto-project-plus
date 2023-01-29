@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { validateUserInfoUpdate, validateAvatarUpdate } from '../utils/celebrate-validadtors';
+import { validateUserInfoUpdate, validateAvatarUpdate, validateGetUser } from '../utils/celebrate-validadtors';
 import {
   getUsers,
   updateUserInfo,
@@ -12,7 +12,7 @@ const router = Router();
 
 router.get('/', getUsers);
 router.get('/me', getCurrentUser);
-router.get('/:userId', getUser);
+router.get('/:userId', validateGetUser, getUser);
 
 router.patch('/me', validateUserInfoUpdate, updateUserInfo);
 router.patch('/me/avatar', validateAvatarUpdate, updateUserAvatar);
